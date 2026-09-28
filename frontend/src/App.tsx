@@ -1,122 +1,41 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useCollectionPoints } from './hooks/useCollectionPoints';
+import { Map } from './components/map/Map.tsx';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const { points, loading, error, refetch } = useCollectionPoints();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <header style={{ padding: '1rem', backgroundColor: '#002B49', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+          <h1 style={{ margin: 0, fontSize: '1.4rem' }}>GeoCenso - Gestão de Coletas IBGE</h1>
+          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#ccc' }}>
+            {points.length} ponto(s) cadastrado(s) no banco PostGIS
           </p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+        <button 
+          onClick={refetch}
+          style={{ padding: '0.5rem 1rem', backgroundColor: '#005691', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
         >
-          Count is {count}
+          Atualizar
         </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
+      <main style={{ flex: 1, position: 'relative' }}>
+        {loading && (
+          <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000, background: '#fff', padding: '0.5rem 1rem', borderRadius: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}>
+            Carregando pontos...
+          </div>
+        )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {error && (
+          <div style={{ position: 'absolute', top: 10, left: 50, zIndex: 1000, background: '#ffdddd', color: '#a00', padding: '0.5rem 1rem', borderRadius: '4px' }}>
+            {error}
+          </div>
+        )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <Map points={points} />
+      </main>
+    </div>
+  );
 }
-
-export default App
