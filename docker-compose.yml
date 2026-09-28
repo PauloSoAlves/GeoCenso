@@ -1,0 +1,16 @@
+services:
+  postgres_postgis:
+    image: postgis/postgis:16-3.4
+    container_name: geocenso_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: geocenso
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+
+volumes:
+  postgis_data:
