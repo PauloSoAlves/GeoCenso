@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 import com.geocenso.backend.dto.CollectionPointResponseDTO;
+import com.geocenso.backend.dto.AddCollectionPointRequestDTO;
 import com.geocenso.backend.service.CollectionPointService;
 
 @RestController 
@@ -21,6 +22,11 @@ public class CollectionPointController {
     @GetMapping
     public List<CollectionPointResponseDTO> listarTodos() {
         return service.listAll();
+    }
+
+    @PostMapping
+    public Long addCollectionPoint(@RequestBody AddCollectionPointRequestDTO request) {
+        return service.addCollectionPoint(request.descricao(), request.latitude(), request.longitude());
     }
     
 }

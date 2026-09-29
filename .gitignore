@@ -79,3 +79,5 @@ pnpm-debug.log*
 **/pgdata/
 *.sqlite
 *.db
+
+setores_geojson.json

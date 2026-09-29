@@ -1,5 +1,5 @@
 import { useCollectionPoints } from './hooks/useCollectionPoints';
-import { Map } from './components/map/Map.tsx';
+import { Map } from './components/Map/Map.tsx';
 
 export default function App() {
   const { points, loading, error, refetch } = useCollectionPoints();
@@ -34,7 +34,7 @@ export default function App() {
           </div>
         )}
 
-        <Map points={points} />
+        <Map points={points} refetch={refetch} />
       </main>
     </div>
   );

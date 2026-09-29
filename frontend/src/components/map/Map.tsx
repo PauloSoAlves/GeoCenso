@@ -1,28 +1,34 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+
 
 import 'leaflet/dist/leaflet.css';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 import type { CollectionPoint } from '../../model/collectionPoint';
-
-// Ajuste para exibição correta dos ícones default do Leaflet no Vite
-const defaultIcon = L.icon({
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-L.Marker.prototype.options.icon = defaultIcon;
+import { pendingIcon } from './Icon/Icon';
+import { useState } from 'react';
+import type { LatLng } from '../../model/latLng';
+import { AddCollectionPointPopup } from './AddCollectionPointPopup/AddCollectionPointPopup';
 
 interface MapViewProps {
   points: CollectionPoint[];
+  refetch: () => void;
 }
 
-export function Map({ points }: MapViewProps) {
+export function Map({ points, refetch }: MapViewProps) {
   // Posição inicial focalizada no Rio de Janeiro (IBGE)
   const defaultCenter: [number, number] = [-22.9068, -43.1729];
+  const [newPoint, setNewPoint] = useState<LatLng | null>(null);
+
+  function MapClickHandler() {
+    const map = useMapEvents({
+      click: (e: L.LeafletMouseEvent) => {
+        const latlng = map.mouseEventToLatLng(e.originalEvent);
+
+        setNewPoint({ lat: latlng.lat, lng: latlng.lng });
+      },
+    })
+    return null
+  }
 
   return (
     <MapContainer
@@ -34,9 +40,9 @@ export function Map({ points }: MapViewProps) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-
+      <MapClickHandler />
       {points.map((point) => (
-        <Marker key={point.id} position={[point.latitude, point.longitude]}>
+        <Marker key={point.id} position={[point.latitude, point.longitude]} icon={pendingIcon}>
           <Popup>
             <strong>{point.descricao}</strong> <br />
             <span style={{ fontSize: '0.8rem', color: '#555' }}>
@@ -45,6 +51,14 @@ export function Map({ points }: MapViewProps) {
           </Popup>
         </Marker>
       ))}
+      {newPoint && (
+        <>
+          <Marker position={[newPoint.lat, newPoint.lng]} icon={pendingIcon} />
+          <Popup position={[newPoint.lat, newPoint.lng]} offset={[0, -20]} autoClose={false} closeOnClick={false}>
+            <AddCollectionPointPopup lat={newPoint.lat} lng={newPoint.lng} setNewPoint={setNewPoint} onSuccess={refetch}/>
+          </Popup>
+        </>
+      )}
     </MapContainer>
   );
 }
