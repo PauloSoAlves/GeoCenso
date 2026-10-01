@@ -1,8 +1,8 @@
-import { useCollectionPoints } from './hooks/useCollectionPoints';
 import { Map } from './components/Map/Map.tsx';
+import { useInitialMapData } from './hooks/useInitialMapData.ts';
 
 export default function App() {
-  const { points, loading, error, refetch } = useCollectionPoints();
+  const { sectors, points, loading, error, refetchPoints } = useInitialMapData();
 
   return (
     <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -14,7 +14,9 @@ export default function App() {
           </p>
         </div>
         <button 
-          onClick={refetch}
+          onClick={() => {
+            refetchPoints();
+          }}
           style={{ padding: '0.5rem 1rem', backgroundColor: '#005691', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
         >
           Atualizar
@@ -24,7 +26,7 @@ export default function App() {
       <main style={{ flex: 1, position: 'relative' }}>
         {loading && (
           <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000, background: '#fff', padding: '0.5rem 1rem', borderRadius: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}>
-            Carregando pontos...
+            Carregando dados...
           </div>
         )}
 
@@ -34,7 +36,7 @@ export default function App() {
           </div>
         )}
 
-        <Map points={points} refetch={refetch} />
+        <Map points={points} sectors={sectors} refetch={refetchPoints} />
       </main>
     </div>
   );

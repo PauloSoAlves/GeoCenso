@@ -1,25 +1,28 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, GeoJSON } from 'react-leaflet';
 
 
 import 'leaflet/dist/leaflet.css';
 
 import type { CollectionPoint } from '../../model/collectionPoint';
-import { pendingIcon } from './Icon/Icon';
+import { newIcon, pendingIcon } from './Icon/Icon';
 import { useState } from 'react';
 import type { LatLng } from '../../model/latLng';
 import { AddCollectionPointPopup } from './AddCollectionPointPopup/AddCollectionPointPopup';
+import type { Sector } from '../../model/sector';
+import { MapMarker } from './MapMarker/MapMarker';
 
 interface MapViewProps {
   points: CollectionPoint[];
+  sectors: Sector[];
   refetch: () => void;
 }
 
-export function Map({ points, refetch }: MapViewProps) {
+export function Map({ points, sectors, refetch }: MapViewProps) {
   // Posição inicial focalizada no Rio de Janeiro (IBGE)
   const defaultCenter: [number, number] = [-22.9068, -43.1729];
   const [newPoint, setNewPoint] = useState<LatLng | null>(null);
 
-  function MapClickHandler() {
+  const MapClickHandler = () => {
     const map = useMapEvents({
       click: (e: L.LeafletMouseEvent) => {
         const latlng = map.mouseEventToLatLng(e.originalEvent);
@@ -41,22 +44,27 @@ export function Map({ points, refetch }: MapViewProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <MapClickHandler />
+      {sectors.map((sector: Sector) => (
+        <GeoJSON
+            key={sector.id}
+            data={sector}
+            style={() => ({
+              color: sector.properties.color || '#3388ff', // Cor da borda
+              fillColor: sector.properties.color || '#3388ff', // Cor do preenchimento
+              fillOpacity: 0.2,
+              weight: 2,
+            })}
+          />
+      ))}
       {points.map((point) => (
-        <Marker key={point.id} position={[point.latitude, point.longitude]} icon={pendingIcon}>
-          <Popup>
-            <strong>{point.descricao}</strong> <br />
-            <span style={{ fontSize: '0.8rem', color: '#555' }}>
-              Lat: {point.latitude.toFixed(4)}, Lng: {point.longitude.toFixed(4)}
-            </span>
-          </Popup>
-        </Marker>
+        <MapMarker key={point.id} point={point} />
       ))}
       {newPoint && (
         <>
-          <Marker position={[newPoint.lat, newPoint.lng]} icon={pendingIcon} />
-          <Popup position={[newPoint.lat, newPoint.lng]} offset={[0, -20]} autoClose={false} closeOnClick={false}>
-            <AddCollectionPointPopup lat={newPoint.lat} lng={newPoint.lng} setNewPoint={setNewPoint} onSuccess={refetch}/>
-          </Popup>
+          <Marker position={[newPoint.lat, newPoint.lng]} icon={newIcon} />
+            <Popup position={[newPoint.lat, newPoint.lng]} offset={[0, -20]} autoClose={false} closeOnClick={false} >
+              <AddCollectionPointPopup lat={newPoint.lat} lng={newPoint.lng} setNewPoint={setNewPoint} onSuccess={refetch}/>
+            </Popup>
         </>
       )}
     </MapContainer>
