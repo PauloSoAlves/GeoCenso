@@ -1,7 +1,5 @@
 package com.geocenso.backend.dto;
 
-import org.locationtech.jts.geom.Geometry;
-
 import com.geocenso.backend.entity.Sector;
 
 public record SectorResponseGeoJsonDTO(
@@ -14,7 +12,12 @@ public record SectorResponseGeoJsonDTO(
         Double areaKm2,
         String cdMun,
         String nmMun,
+        String cdDist,
+        String nmDist,
+        String cdSubdist,
+        String nmSubdist,
         String color
+
     ) {}
 
     public static SectorResponseGeoJsonDTO fromEntity(Sector entity) {
@@ -26,6 +29,10 @@ public record SectorResponseGeoJsonDTO(
                 entity.getArea(),
                 entity.getCdMun(),
                 entity.getNmMun(),
+                entity.getCdDist(),
+                entity.getNmDist(),
+                entity.getCdSubdist(),
+                entity.getNmSubdist(),
                 entity.getColor()
             )
         );

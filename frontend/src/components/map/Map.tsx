@@ -1,10 +1,10 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, GeoJSON, Tooltip } from 'react-leaflet';
 
 
 import 'leaflet/dist/leaflet.css';
 
 import type { CollectionPoint } from '../../model/collectionPoint';
-import { newIcon, pendingIcon } from './Icon/Icon';
+import { newIcon } from './Icon/Icon';
 import { useState } from 'react';
 import type { LatLng } from '../../model/latLng';
 import { AddCollectionPointPopup } from './AddCollectionPointPopup/AddCollectionPointPopup';
@@ -54,7 +54,11 @@ export function Map({ points, sectors, refetch }: MapViewProps) {
               fillOpacity: 0.2,
               weight: 2,
             })}
-          />
+          >
+            <Tooltip direction="top" offset={[0, -10]} opacity={1}>
+              {sector.properties.nmSubdist} - {sector.properties.nmDist} - {sector.properties.nmMun}
+            </Tooltip>
+          </GeoJSON >
       ))}
       {points.map((point) => (
         <MapMarker key={point.id} point={point} />
